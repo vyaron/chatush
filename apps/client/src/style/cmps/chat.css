@@ -82,6 +82,8 @@
   border-radius: 999px;
   padding: 8px 14px;
   background: var(--surface);
+  color: var(--text-1);
+  text-transform: capitalize;
 }
 
 .chip.active {

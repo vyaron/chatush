@@ -14,3 +14,4 @@
 - Prefer CSS variables for colors, spacing, sizing, and shared tokens.
 - Keep styles clean, scoped, and maintainable.
 - Use nested CSS where it improves scoping and readability.
+- when something is doable in CSS (such as capitalize - dont use code)
