@@ -34,6 +34,10 @@ export function createSocketServer(httpServer: HttpServer): Server {
 
       socket.join(parsedPayload.data.room)
       socket.emit('room:joined', { room: parsedPayload.data.room })
+      socket.to(parsedPayload.data.room).emit('room:user-joined', {
+        room: parsedPayload.data.room,
+        nickname: parsedPayload.data.nickname
+      })
     })
 
     socket.on('message:send', payload => {

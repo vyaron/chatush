@@ -50,6 +50,13 @@ export function App() {
       })
     })
 
+    socket.on('room:user-joined', payload => {
+      const { nickname: who, room } = payload as { nickname: string; room: string }
+      if (room === activeRoom) {
+        toast.success(`${who} joined #${room}`)
+      }
+    })
+
     socket.on('error:event', payload => {
       const body = payload as { message: string }
       toast.error(body.message)
@@ -78,8 +85,6 @@ export function App() {
       .catch(() => {
         toast.error('Could not load room history')
       })
-
-    socketRef?.emit('room:join', { room: activeRoom, nickname })
   }, [activeRoom, isReady, nickname])
 
   const roomCountLabel = useMemo(() => `${ROOM_LIST.length} rooms`, [])
