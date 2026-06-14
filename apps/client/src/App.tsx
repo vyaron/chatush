@@ -1,5 +1,15 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react'
-import { LogOut, MessageCircle, SendHorizontal, Users } from 'lucide-react'
+import {
+  ArrowLeft,
+  Camera,
+  MoreVertical,
+  Paperclip,
+  Phone,
+  Plus,
+  SendHorizontal,
+  Smile,
+  Video
+} from 'lucide-react'
 import { io, type Socket } from 'socket.io-client'
 import { toast } from 'sonner'
 
@@ -11,12 +21,66 @@ type ChatMessage = {
   createdAt: string
 }
 
+type UiMessage = {
+  id: string
+  text?: string
+  timeLabel: string
+  isMine: boolean
+  fileName?: string
+  fileType?: string
+  fileSize?: string
+}
+
 const ROOM_LIST = ['general', 'random', 'support']
 const NICKNAME_KEY = 'nickname'
 
 const API_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:3001'
 
 let socketRef: Socket | null = null
+
+const DESIGN_THREAD: UiMessage[] = [
+  { id: 'd1', text: 'Good morning!', timeLabel: '10:10', isMine: true },
+  { id: 'd2', text: 'Japan looks amazing!', timeLabel: '10:10', isMine: true },
+  { id: 'd3', text: 'I will write from Japan', timeLabel: '17:47', isMine: true },
+  { id: 'd4', text: 'Good bye!', timeLabel: '17:47', isMine: true },
+  {
+    id: 'd5',
+    timeLabel: '10:15',
+    isMine: true,
+    fileName: 'IMG_0481',
+    fileType: 'png',
+    fileSize: '2.8 MB'
+  },
+  {
+    id: 'd6',
+    timeLabel: '10:15',
+    isMine: true,
+    fileName: 'IMG_0475',
+    fileType: 'png',
+    fileSize: '2.4 MB'
+  },
+  {
+    id: 'd7',
+    timeLabel: '11:51',
+    isMine: true,
+    fileName: 'IMG_0484',
+    fileType: 'png',
+    fileSize: '2.6 MB'
+  },
+  {
+    id: 'd8',
+    timeLabel: '11:51',
+    isMine: true,
+    fileName: 'IMG_0483',
+    fileType: 'png',
+    fileSize: '2.8 MB'
+  },
+  { id: 'd9', text: 'Do you know what time is it?', timeLabel: '11:40', isMine: false },
+  { id: 'd10', text: 'What is the most popular meal in Japan?', timeLabel: '11:45', isMine: false },
+  { id: 'd11', text: 'It’s morning in Tokyo 😎', timeLabel: '11:43', isMine: true },
+  { id: 'd12', text: 'I think top two are:', timeLabel: '11:50', isMine: true },
+  { id: 'd13', text: 'Do you like it?', timeLabel: '11:45', isMine: false }
+]
 
 export function App() {
   const [nickname, setNickname] = useState<string>(() => localStorage.getItem(NICKNAME_KEY) ?? '')
@@ -87,7 +151,21 @@ export function App() {
       })
   }, [activeRoom, isReady, nickname])
 
-  const roomCountLabel = useMemo(() => `${ROOM_LIST.length} rooms`, [])
+  const liveThread = useMemo<UiMessage[]>(
+    () =>
+      messageList.map(message => ({
+        id: message.id,
+        text: `${message.nickname}: ${message.text}`,
+        isMine: message.nickname === nickname,
+        timeLabel: new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      })),
+    [messageList, nickname]
+  )
+
+  const timeline = useMemo<UiMessage[]>(
+    () => (activeRoom === ROOM_LIST[0] ? [...DESIGN_THREAD, ...liveThread] : liveThread),
+    [activeRoom, liveThread]
+  )
 
   function onSaveNickname(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -101,13 +179,6 @@ export function App() {
     localStorage.setItem(NICKNAME_KEY, nextNickname)
     setNickname(nextNickname)
     setDraftNickname('')
-  }
-
-  function onLogout() {
-    localStorage.removeItem(NICKNAME_KEY)
-    setNickname('')
-    setMessageList([])
-    setDraftMessage('')
   }
 
   function onSendMessage(event: FormEvent<HTMLFormElement>) {
@@ -130,17 +201,18 @@ export function App() {
   if (!isReady) {
     return (
       <main className='app-shell'>
-        <section className='card nickname-card'>
-          <h1>Debate Room</h1>
-          <p>Pick a nickname to join live room discussions.</p>
+        <section className='card nickname-card whatsapp-login'>
+          <p className='eyebrow'>Live chat setup</p>
+          <h1>Welcome to WhatsAppUI</h1>
+          <p>Choose a nickname to join room conversations in real time.</p>
           <form onSubmit={onSaveNickname} className='row'>
             <input
               value={draftNickname}
               onChange={event => setDraftNickname(event.target.value)}
-              placeholder='Enter nickname'
+              placeholder='Type your nickname'
               aria-label='Nickname'
             />
-            <button type='submit'>Join</button>
+            <button type='submit'>Continue</button>
           </form>
         </section>
       </main>
@@ -149,59 +221,112 @@ export function App() {
 
   return (
     <main className='app-shell'>
-      <section className='card chat-layout'>
-        <header className='chat-header'>
-          <div>
-            <h1>Debate Room</h1>
-            <p>Signed in as <strong>{nickname}</strong></p>
+      <section className='card phone-shell'>
+        <header className='status-bar'>
+          <span>9:41</span>
+          <div className='status-icons'>
+            <span className='signal-bars' aria-hidden='true'>
+              <i />
+              <i />
+              <i />
+              <i />
+            </span>
+            <span className='wifi-glyph' aria-hidden='true' />
+            <span className='battery-glyph' aria-hidden='true'>
+              <span className='battery-level' />
+            </span>
           </div>
-          <button type='button' className='ghost' onClick={onLogout}>
-            <LogOut size={16} /> Logout
-          </button>
         </header>
 
-        <div className='room-bar'>
-          <span><Users size={14} /> {roomCountLabel}</span>
-          <div className='room-chip-list'>
-            {ROOM_LIST.map(room => (
-              <button
-                key={room}
-                className={room === activeRoom ? 'chip active' : 'chip'}
-                onClick={() => setActiveRoom(room)}
-                type='button'
-              >
-                {room}
-              </button>
-            ))}
+        <header className='contact-bar'>
+          <button type='button' className='chrome-icon' aria-label='Back'>
+            <ArrowLeft size={17} />
+          </button>
+          <img src='/figma/martha-avatar.png' alt='Martha Craig' className='contact-avatar' />
+          <div className='contact-meta'>
+            <h1>Martha Craig</h1>
+            <p>#{activeRoom} · tap here for contact info</p>
           </div>
-        </div>
+          <div className='contact-actions'>
+            <button type='button' className='chrome-icon' aria-label='Video call'>
+              <Video size={17} />
+            </button>
+            <button type='button' className='chrome-icon' aria-label='Call'>
+              <Phone size={17} />
+            </button>
+            <button type='button' className='chrome-icon' aria-label='More options'>
+              <MoreVertical size={17} />
+            </button>
+          </div>
+        </header>
 
-        <section className='message-list'>
-          {messageList.map(message => (
-            <article key={message.id} className='message-item'>
-              <header>
-                <span className='nick'>{message.nickname}</span>
-                <time>{new Date(message.createdAt).toLocaleTimeString()}</time>
-              </header>
-              <p>{message.text}</p>
+        <nav className='room-strip' aria-label='Chat rooms'>
+          {ROOM_LIST.map(room => (
+            <button
+              key={room}
+              type='button'
+              className={room === activeRoom ? 'room-chip active' : 'room-chip'}
+              onClick={() => setActiveRoom(room)}
+            >
+              #{room}
+            </button>
+          ))}
+        </nav>
+
+        <section className='thread'>
+          <div className='date-pill'>Fri, Jul 26</div>
+
+          {timeline.map(message => (
+            <article key={message.id} className={message.isMine ? 'bubble mine' : 'bubble'}>
+              {message.text && <p>{message.text}</p>}
+
+              {message.fileName && (
+                <div className='file-card'>
+                  <div className='file-icon'>DOC</div>
+                  <strong>{message.fileName}</strong>
+                  <small>
+                    {message.fileType} • {message.fileSize}
+                  </small>
+                </div>
+              )}
+
+              <footer>
+                <time>{message.timeLabel}</time>
+                {message.isMine && <span className='tick'>✓✓</span>}
+              </footer>
             </article>
           ))}
-          {messageList.length === 0 && (
-            <p className='empty'><MessageCircle size={16} /> No messages yet. Start the room.</p>
-          )}
         </section>
 
         <form onSubmit={onSendMessage} className='composer'>
-          <input
-            value={draftMessage}
-            onChange={event => setDraftMessage(event.target.value)}
-            placeholder={`Message #${activeRoom}`}
-            aria-label='Message'
-          />
-          <button type='submit'>
-            <SendHorizontal size={16} /> Send
+          <button type='button' className='chrome-icon' aria-label='More'>
+            <Plus size={16} />
+          </button>
+          <div className='compose-input'>
+            <button type='button' className='chrome-icon' aria-label='Emoji'>
+              <Smile size={16} />
+            </button>
+            <input
+              value={draftMessage}
+              onChange={event => setDraftMessage(event.target.value)}
+              placeholder='Type your message'
+              aria-label='Message'
+            />
+            <button type='button' className='chrome-icon' aria-label='Attach'>
+              <Paperclip size={16} />
+            </button>
+            <button type='button' className='chrome-icon' aria-label='Camera'>
+              <Camera size={16} />
+            </button>
+          </div>
+          <button type='submit' className='send-btn' aria-label='Send message'>
+            <SendHorizontal size={16} />
           </button>
         </form>
+
+        <footer className='home-indicator'>
+          <span />
+        </footer>
       </section>
     </main>
   )
