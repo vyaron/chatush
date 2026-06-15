@@ -2,9 +2,10 @@ import { ArrowRight, Github, Linkedin, Twitter } from 'lucide-react'
 
 type HomePageProps = {
   onStartChat: () => void
+  onOpenSettings: () => void
 }
 
-export function HomePage({ onStartChat }: HomePageProps) {
+export function HomePage({ onStartChat, onOpenSettings }: HomePageProps) {
   return (
     <main className='home-shell'>
       <section className='home-cover'>
@@ -12,9 +13,14 @@ export function HomePage({ onStartChat }: HomePageProps) {
           <img src='/figma/home/cover-icon.png' alt='WhatsApp logo' className='cover-icon' />
           <h1>WhatsApp</h1>
           <p>21 screens</p>
-          <button type='button' className='cover-cta' onClick={onStartChat}>
-            Open Chat Demo <ArrowRight size={16} />
-          </button>
+          <div className='cover-actions'>
+            <button type='button' className='cover-cta' onClick={onStartChat}>
+              Open Chat Demo <ArrowRight size={16} />
+            </button>
+            <button type='button' className='cover-cta cover-cta-secondary' onClick={onOpenSettings}>
+              Open Settings <ArrowRight size={16} />
+            </button>
+          </div>
         </aside>
 
         <div className='cover-phones' aria-hidden='true'>
@@ -60,6 +66,7 @@ export function HomePage({ onStartChat }: HomePageProps) {
         <div className='home-footer-nav'>
           <a href='/' aria-label='Go to homepage'>Home</a>
           <button type='button' onClick={onStartChat} aria-label='Open chat page'>Chat</button>
+          <button type='button' onClick={onOpenSettings} aria-label='Open settings page'>Settings</button>
         </div>
 
         <div className='home-footer-social' aria-label='Social links'>

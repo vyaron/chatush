@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { ChatPage } from './ChatPage'
 import { HomePage } from './HomePage'
+import { SettingsPage } from './SettingsPage'
 
 export function App() {
   const [path, setPath] = useState(() => window.location.pathname)
@@ -24,5 +25,9 @@ export function App() {
     return <ChatPage />
   }
 
-  return <HomePage onStartChat={() => navigate('/chat')} />
+  if (path === '/settings') {
+    return <SettingsPage onOpenChat={() => navigate('/chat')} onOpenHome={() => navigate('/')} />
+  }
+
+  return <HomePage onStartChat={() => navigate('/chat')} onOpenSettings={() => navigate('/settings')} />
 }
