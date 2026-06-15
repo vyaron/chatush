@@ -144,11 +144,20 @@
 .home-footer {
   width: min(1200px, 100%);
   margin: 16px auto 0;
-  display: flex;
-  justify-content: center;
+  display: grid;
+  justify-items: center;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
   color: #f3fff7;
+}
+
+.home-footer-nav,
+.home-footer-social {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .home-footer a,
@@ -160,6 +169,16 @@
   font: inherit;
   cursor: pointer;
   opacity: 0.9;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.home-footer a:focus-visible,
+.home-footer button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  border-radius: 8px;
 }
 
 .card {
@@ -629,6 +648,11 @@
   .home-footer {
     margin: 8px auto 14px;
     color: #1f352a;
+  }
+
+  .home-footer-nav,
+  .home-footer-social {
+    gap: 10px;
   }
 
   .phone-shell {

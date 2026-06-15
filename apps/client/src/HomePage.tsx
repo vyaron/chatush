@@ -1,4 +1,4 @@
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Github, Linkedin, Twitter } from 'lucide-react'
 
 type HomePageProps = {
   onStartChat: () => void
@@ -57,9 +57,22 @@ export function HomePage({ onStartChat }: HomePageProps) {
       </section>
 
       <footer className='home-footer'>
-        <a href='/' aria-label='Go to homepage'>Home</a>
-        <button type='button' onClick={onStartChat} aria-label='Open chat page'>Chat</button>
-        <a href='https://github.com/vyaron/chatush/issues/1' target='_blank' rel='noreferrer'>Issue #1</a>
+        <div className='home-footer-nav'>
+          <a href='/' aria-label='Go to homepage'>Home</a>
+          <button type='button' onClick={onStartChat} aria-label='Open chat page'>Chat</button>
+        </div>
+
+        <div className='home-footer-social' aria-label='Social links'>
+          <a href='https://github.com/vyaron/chatush' target='_blank' rel='noreferrer' aria-label='Open GitHub profile'>
+            <Github size={16} /> GitHub
+          </a>
+          <a href='https://x.com' target='_blank' rel='noreferrer' aria-label='Open X profile'>
+            <Twitter size={16} /> X
+          </a>
+          <a href='https://www.linkedin.com' target='_blank' rel='noreferrer' aria-label='Open LinkedIn profile'>
+            <Linkedin size={16} /> LinkedIn
+          </a>
+        </div>
       </footer>
     </main>
   )
